@@ -45,12 +45,12 @@ extension Signature.RS256 {
             }
 
             let count = CFDataGetLength(signature)
-            var bytes = [Byte](repeating: 0, count: count)
+            var bytes = [UInt8](repeating: 0, count: count)
             bytes.withUnsafeMutableBufferPointer { buffer in
                 guard let base = buffer.baseAddress else { return }
                 unsafe CFDataGetBytes(signature, CFRangeMake(0, count), base)
             }
-            return bytes
+            return bytes.map(Byte.init(bitPattern:))
         #else
             throw .unsupportedPlatform
         #endif

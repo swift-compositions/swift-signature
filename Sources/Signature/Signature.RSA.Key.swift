@@ -39,14 +39,14 @@ extension Signature.RSA.Key {
 
         func length() throws(Error) -> Swift.Int {
             guard cursor < der.count else { throw .malformed }
-            let first = der[cursor]
+            let first = UInt8(bitPattern: der[cursor])
             cursor += 1
             guard first & 0x80 != 0 else { return Swift.Int(first) }
             let count = Swift.Int(first & 0x7F)
             guard count > 0, count <= 4, cursor + count <= der.count else { throw .malformed }
             var value = 0
             for _ in 0..<count {
-                value = value << 8 | Swift.Int(der[cursor])
+                value = value << 8 | Swift.Int(UInt8(bitPattern: der[cursor]))
                 cursor += 1
             }
             return value
@@ -58,12 +58,12 @@ extension Signature.RSA.Key {
             return try length()
         }
 
-        _ = try expect(0x30)
-        let versionLength = try expect(0x02)
+        _ = try expect(Byte(bitPattern: 0x30))
+        let versionLength = try expect(Byte(bitPattern: 0x02))
         cursor += versionLength
-        let algorithmLength = try expect(0x30)
+        let algorithmLength = try expect(Byte(bitPattern: 0x30))
         cursor += algorithmLength
-        let keyLength = try expect(0x04)
+        let keyLength = try expect(Byte(bitPattern: 0x04))
         guard cursor >= 0, cursor + keyLength <= der.count else { throw .malformed }
         return Array(der[cursor..<(cursor + keyLength)])
     }

@@ -58,7 +58,7 @@ extension Signature {
                 func `refuses DER the platform facility cannot import`() {
                     #expect(throws: Signature.RS256.Error.malformedKey) {
                         try Signature.RS256.sign(
-                            message: [Byte]("message".utf8),
+                            message: [Byte](utf8: "message"),
                             key: Signature.RSA.Key(der: [1, 2, 3].map { Byte(UInt8($0)) })
                         )
                     }
@@ -68,7 +68,7 @@ extension Signature {
                 func `reports the missing platform facility`() {
                     #expect(throws: Signature.RS256.Error.unsupportedPlatform) {
                         try Signature.RS256.sign(
-                            message: [Byte]("message".utf8),
+                            message: [Byte](utf8: "message"),
                             key: Signature.RSA.Key(der: [])
                         )
                     }
@@ -98,11 +98,12 @@ extension Signature {
                         unsafe SecKeyCopyExternalRepresentation(generated, &failure)
                     )
                     let count = CFDataGetLength(exported)
-                    var der = [Byte](repeating: 0, count: count)
-                    der.withUnsafeMutableBufferPointer { buffer in
+                    var raw = [UInt8](repeating: 0, count: count)
+                    raw.withUnsafeMutableBufferPointer { buffer in
                         guard let base = unsafe buffer.baseAddress else { return }
                         unsafe CFDataGetBytes(exported, CFRangeMake(0, count), base)
                     }
+                    let der = raw.map(Byte.init(bitPattern:))
 
                     let pem =
                         "-----BEGIN RSA PRIVATE KEY-----\n"
@@ -111,7 +112,7 @@ extension Signature {
                     let key = try Signature.RSA.Key(pem: pem)
                     #expect(key.der == der)
 
-                    let message = [Byte]("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.claims".utf8)
+                    let message = [Byte](utf8: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.claims")
                     let signature = try Signature.RS256.sign(message: message, key: key)
 
                     let publicKey = try #require(SecKeyCopyPublicKey(generated))
