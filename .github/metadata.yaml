@@ -1,0 +1,4 @@
+description: "Asymmetric message signing (RS256-first): PEM to DER key parsing and RSASSA-PKCS1-v1_5 signatures, composing FIPS 180-4 for SHA-2."
+homepage: "https://swift-institute.org"
+readme:
+  family: E
