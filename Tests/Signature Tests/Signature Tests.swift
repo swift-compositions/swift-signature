@@ -8,7 +8,9 @@ import Testing
     import Security
 #endif
 
-extension Signature {
+enum `Signature Tests` {}
+
+extension `Signature Tests` {
     @Suite
     struct Test {
         @Suite
