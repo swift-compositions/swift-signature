@@ -22,7 +22,7 @@ extension Signature.RS256 {
                 values: [kSecAttrKeyTypeRSA, kSecAttrKeyClassPrivate]
             )
             let keyData = try data(key.der)
-            let digestData = try data(FIPS_180_4.SHA256.digest(message).bytes)
+            let digestData = try data(NIST.FIPS.`180`.`4`.SHA256.digest(message).bytes)
 
             var failure: Unmanaged<CFError>?
             guard
